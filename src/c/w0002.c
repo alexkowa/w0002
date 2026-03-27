@@ -1,14 +1,16 @@
 #include <pebble.h>
 
-#define DIAL_COLOR GColorFromRGB(249, 247, 241)
-#define BEZEL_COLOR GColorFromRGB(196, 196, 196)
-#define BEZEL_SHADOW_COLOR GColorFromRGB(228, 228, 228)
-#define MARKER_COLOR GColorFromRGB(110, 110, 110)
-#define TEXT_COLOR GColorFromRGB(92, 92, 92)
+#define DIAL_COLOR GColorBlack
+#define BEZEL_COLOR GColorFromRGB(210, 210, 210)
+#define BEZEL_SHADOW_COLOR GColorFromRGB(92, 92, 92)
+#define MARKER_COLOR GColorFromRGB(210, 210, 210)
+#define TEXT_COLOR GColorFromRGB(184, 184, 184)
 #define ACCENT_COLOR GColorFromRGB(204, 36, 36)
-#define DATE_BOX_COLOR GColorFromRGB(180, 180, 180)
-#define SECOND_HAND_COLOR GColorFromRGB(188, 180, 156)
-#define HAND_BASE_COLOR GColorFromRGB(176, 176, 176)
+#define DATE_BOX_COLOR GColorFromRGB(196, 196, 196)
+#define DATE_FILL_COLOR GColorBlack
+#define SECOND_HAND_COLOR GColorFromRGB(216, 216, 216)
+#define HAND_BASE_COLOR GColorFromRGB(190, 190, 190)
+#define HAND_HIGHLIGHT_COLOR GColorFromRGB(228, 228, 228)
 
 static Window *s_window;
 static Layer *s_face_layer;
@@ -43,8 +45,8 @@ static void prv_draw_marker_line(GContext *ctx, GPoint center, int32_t angle,
 
 static void prv_draw_dial(GContext *ctx, GRect bounds) {
   const GPoint center = grect_center_point(&bounds);
-  const int16_t outer_radius = bounds.size.w / 2 ;
-  const int16_t dial_radius = outer_radius - 4;
+  const int16_t outer_radius = bounds.size.w / 2;
+  const int16_t dial_radius = outer_radius;
   const int16_t marker_outer = dial_radius;
   const int16_t tick_inner = marker_outer - 34;
   const int16_t minute_tick_length = 6;
@@ -53,18 +55,6 @@ static void prv_draw_dial(GContext *ctx, GRect bounds) {
 
   graphics_context_set_fill_color(ctx, DIAL_COLOR);
   graphics_fill_circle(ctx, center, dial_radius);
-
-  graphics_context_set_stroke_color(ctx, BEZEL_SHADOW_COLOR);
-  graphics_context_set_stroke_width(ctx, 4);
-  graphics_draw_circle(ctx, center, outer_radius);
-
-  graphics_context_set_stroke_color(ctx, BEZEL_COLOR);
-  graphics_context_set_stroke_width(ctx, 2);
-  graphics_draw_circle(ctx, center, dial_radius);
-
-  graphics_context_set_stroke_width(ctx, 1);
-  graphics_context_set_stroke_color(ctx, BEZEL_SHADOW_COLOR);
-  graphics_draw_circle(ctx, center, dial_radius - 3);
 
   for (int i = 0; i < 60; ++i) {
     if (i % 5 == 0) {
@@ -80,17 +70,6 @@ static void prv_draw_dial(GContext *ctx, GRect bounds) {
   }
 
   prv_draw_marker_line(ctx, center, 0, marker_outer, tick_inner, MARKER_COLOR, 1);
-
-  const int16_t top_circle_y = center.y - marker_outer;
-  const int16_t top_circle_offset = 8;
-
-  graphics_context_set_fill_color(ctx, DIAL_COLOR);
-  graphics_fill_circle(ctx, GPoint(center.x - top_circle_offset, top_circle_y), 4);
-  graphics_fill_circle(ctx, GPoint(center.x + top_circle_offset, top_circle_y), 4);
-
-  graphics_context_set_stroke_color(ctx, BEZEL_COLOR);
-  graphics_draw_circle(ctx, GPoint(center.x - top_circle_offset, top_circle_y), 4);
-  graphics_draw_circle(ctx, GPoint(center.x + top_circle_offset, top_circle_y), 4);
 }
 
 static void prv_draw_branding(GContext *ctx, GRect bounds) {
@@ -113,7 +92,7 @@ static void prv_draw_date_window(GContext *ctx, GRect bounds) {
   const GRect frame = GRect(center.x + 64, center.y - 10, 30, 20);
   const GRect text_frame = GRect(frame.origin.x, frame.origin.y - 3, frame.size.w, frame.size.h);
 
-  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, DATE_FILL_COLOR);
   graphics_fill_rect(ctx, frame, 0, GCornerNone);
 
   graphics_context_set_stroke_color(ctx, DATE_BOX_COLOR);
@@ -137,7 +116,7 @@ static void prv_draw_hand(GContext *ctx, GPoint center, int32_t angle,
   graphics_context_set_stroke_width(ctx, base_width);
   graphics_draw_line(ctx, tail, tip);
 
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, HAND_HIGHLIGHT_COLOR);
   graphics_context_set_stroke_width(ctx, highlight_width);
   graphics_draw_line(ctx, tail, tip);
 
